@@ -452,6 +452,11 @@ WantedBy=multi-user.target
 sudo ln -s ~/{프로젝트이름}/.config/uwsgi/uwsgi.service /etc/systemd/system/uwsgi.service
 ```
 
+- **폴더 권한설정**
+  - 
+```bash
+sudo chmod 777 /home/ubuntu
+```
 
 
 - 등록
