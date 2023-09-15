@@ -15,14 +15,38 @@
 ```python
 # settings.py
 ALLOWED_HOSTS = [
-    '.compute.amazonaws.com',
+    '.amazonaws.com',
     '*',
 ]
 ```
 
+### 1. urls.py / views.py
+
+```python
+# insta/urls.py
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('posts/', include('posts.urls')),
+    path('accounts/', include('accounts.urls')),
+    path('', views.main, name='main'),
+    # => 최상위 url에 접속 했을 때 posts앱의 index로 이동  
+
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+```
+
+```python
+# insta/views.py
+from django.shortcuts import redirect
 
 
-### 1. 의존성 저장
+# Create your views here.
+def main(request):
+    return redirect('posts:index')
+  
+```
+
+
+### 2. 의존성 저장
 
 - freeze
 
@@ -32,7 +56,7 @@ pip freeze > requirements.txt
 
 
 
-### 2. git push
+### 3. git push
 
 - 원격저장소에 업로드 (add, commit, push)
 
@@ -79,6 +103,9 @@ pip freeze > requirements.txt
 
 
 - 인스턴스
+
+  - 인스턴스 유형 : `t3.small` 로 설정
+
   - 서버를 끄지 않으려면 `안함` 으로 설정
 
 ![instance](deploy.assets/instance.png)
@@ -145,12 +172,19 @@ echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
 echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bashrc
 
 source ~/.bashrc
-
 ```
 
 
 
 ### 1. python 설치&전역등록
+
+- python 설치를 위한 라이브러리 설치
+  - 한줄씩 실행 / 출력되는 보라색 화면에서 enter 눌러서 진행
+
+```shell
+sudo apt-get install liblzma-dev
+sudo apt-get install libbz2-dev
+```
 
 > 프로젝트 진행한 버전에 맞게 설치
 
@@ -162,14 +196,6 @@ python -V
 ```
 
 
-
-- module not found
-
-```shell
-sudo apt-get install liblzma-dev
-sudo apt-get install libbz2-dev
-
-```
 
 
 
@@ -186,7 +212,7 @@ sudo apt-get install libbz2-dev
 
 
 - clone
-  - need github auth token
+  -  private repo의 경우 github auth token 필요
 
 
 ```
@@ -259,6 +285,7 @@ python manage.py createsuperuser
 ## nginx
 
 ### 0. 설치
+- 한줄씩 실행 / 출력되는 보라색 화면에서 enter 눌러서 진행
 
 ```shell
 sudo apt-get update
@@ -279,7 +306,7 @@ sudo apt-get install -y nginx
   - staticfiles의 경우 다른 폴더를 썼다면 이름수정
 
 ```
-server_name *.compute.amazonaws.com;
+server_name *.amazonaws.com;
 
 location / {
 		uwsgi_pass unix:///home/ubuntu/{프로젝트이름}/tmp/{프로젝트이름}.sock;
@@ -453,7 +480,6 @@ sudo ln -s ~/{프로젝트이름}/.config/uwsgi/uwsgi.service /etc/systemd/syste
 ```
 
 - **폴더 권한설정**
-  - 
 ```bash
 sudo chmod 777 /home/ubuntu
 ```
